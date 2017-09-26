@@ -37,10 +37,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(HttpMethod.GET,
                         "/v2/api-docs",
-                                    "/webjars/**",
-                                    "/swagger-resources/**",
-                                    "/configuration/**").permitAll()
-                .antMatchers("/login").permitAll()
+                        "/webjars/**",
+                        "/swagger-resources/**",
+                        "/**/*.html",
+                        "/configuration/**").permitAll()
+                .antMatchers("/login", "/api/user").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 // filter the api/login requests
