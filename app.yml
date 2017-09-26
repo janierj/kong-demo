@@ -1,0 +1,72 @@
+version: '2.0'
+services:
+   kong-postgresql:
+       container_name: kong-database
+       image: quay.io/nedoc1990/library-postgres
+       environment:
+           - POSTGRES_USER=kong
+           - POSTGRES_PASSWORD=kong
+       ports:
+           - 5433:5432
+
+   migrations:
+       image: quay.io/nedoc1990/library-kong
+       depends_on:
+          - kong-postgresql
+       environment:
+           - KONG_DATABASE=postgres
+           - KONG_PG_HOST=kong-postgresql
+           - KONG_PG_PASSWORD=kong
+           - KONG_PG_USER=kong
+       links:
+           - kong-postgresql
+       command: ["kong", "migrations", "up"]
+#    --link kong-database:kong-database \
+#    -e "KONG_DATABASE=postgres" \
+#docker run --rm \
+#    -e "KONG_PG_HOST=kong-database" \
+#    -e "KONG_CASSANDRA_CONTACT_POINTS=kong-database" \
+#    kong:latest kong migrations up
+
+   web:
+       image: quay.io/nedoc1990/library-kong
+       container_name: kong
+       environment:
+           - DATABASE=postgres
+           - KONG_PG_HOST=postgres
+       restart: always
+       ports:
+           - "8000:8000"
+           - "443:8443"
+           - "8001:8001"
+           - "7946:7946"
+           - "7946:7946/udp"
+       links:
+           - kong-postgresql
+
+#   ui:
+#       image: pgbi/kong-dashboard
+#       container_name: kong-dashboard
+#       ports:
+#           - "8080:8080"
+
+   demo-app:
+       image: demo/demo
+       ports:
+           - "8081:8081"
+       links:
+           - demo-postgresql
+           - web
+       environment:
+           - SPRING_DATASOURCE_URL=jdbc:postgresql://demo-postgresql:5432/demo
+
+   demo-postgresql:
+       container_name: demo-postgresql
+       image: quay.io/nedoc1990/library-postgres
+       environment:
+           - POSTGRES_DB=demo
+           - POSTGRES_USER=postgres
+           - POSTGRES_PASSWORD=postgres
+           - PGPORT=5432
+       ports:
+           - 5434:5432

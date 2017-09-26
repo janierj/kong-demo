@@ -1,0 +1,15 @@
+version: '2'
+services:
+    demo-postgresql:
+        container_name: demo-postgresql
+        image: quay.io/nedoc1990/library-postgres
+#        volumes:
+#            - demo-postgresql:/var/lib/postgresql/data
+        environment:
+            - POSTGRES_DB=demo
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=postgres
+        ports:
+            - 5434:5432
+#volumes:
+#    demo-postgresql: {}
