@@ -67,13 +67,4 @@ public class ProjectResource {
         projectRepository.save(project);
         return ResponseEntity.created(new URI("/api/projects/" + project.getId())).body(project);
     }
-
-    @PostMapping("/apikey")
-    public ResponseEntity<Project> getProjectByApiKey(@RequestBody String apiKey) {
-        Project project = projectRepository.findByApiKey(apiKey);
-        if (project != null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(project);
-    }
 }
