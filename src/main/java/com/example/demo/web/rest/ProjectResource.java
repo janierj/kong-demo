@@ -3,6 +3,7 @@ package com.example.demo.web.rest;
 import com.example.demo.domain.ApiKey;
 import com.example.demo.domain.Project;
 import com.example.demo.domain.User;
+import com.example.demo.repository.ApiKeyRepository;
 import com.example.demo.repository.ProjectRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.util.HeaderUtil;
@@ -27,6 +28,7 @@ public class ProjectResource {
 
     private static final String ENTITY_NAME = "Project";
     private final ProjectRepository projectRepository;
+    private final ApiKeyRepository apiKeyRepository;
     private final UserRepository userRepository;
 
     @Value("${kong.address}")
@@ -35,9 +37,11 @@ public class ProjectResource {
     @Value("${kong.consumers}")
     private String kongConsumers;
 
-    public ProjectResource(ProjectRepository projectRepository, UserRepository userRepository) {
+    public ProjectResource(ProjectRepository projectRepository, UserRepository userRepository, ApiKeyRepository apiKeyRepository) {
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
+        this.apiKeyRepository = apiKeyRepository;
+
     }
 
     @PostMapping("/project")
@@ -66,5 +70,18 @@ public class ProjectResource {
         project.setOwner(loggedUser);
         projectRepository.save(project);
         return ResponseEntity.created(new URI("/api/projects/" + project.getId())).body(project);
+    }
+
+    @GetMapping("/project")
+    public ResponseEntity<Project> getProjectByApiKey(@RequestParam String apiKey) {
+        ApiKey key = apiKeyRepository.findByKey(apiKey);
+        Project project = null;
+        if (key != null) {
+            project = projectRepository.findByApiKey(key);
+            if (project != null) {
+                return ResponseEntity.ok(project);
+            }
+        }
+        return ResponseEntity.notFound().build();
     }
 }

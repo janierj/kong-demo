@@ -8,7 +8,6 @@ import com.github.vaibhavsinha.kong.model.admin.consumer.Consumer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,21 +32,6 @@ public class UserResource {
     public UserResource(UserRepository userRepository, AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
     }
-
-//    @PostMapping(value = "/default")
-//    public ResponseEntity<User> createDefaultUser() {
-//        KongClient kongClient = new KongClient(kongAddress);
-//        Consumer request = new Consumer();
-//        User testUser = new User();
-//        testUser.setUsername("Admin2");
-//        testUser.setPassword("pass");
-//        request.setCustomId(String.valueOf(Math.random()));
-//        request.setUsername(testUser.getUsername());
-//        Consumer response = kongClient.getConsumerService().createConsumer(request);
-//        testUser.setConsumerId(response.getCustomId());
-//        userRepository.save(testUser);
-//        return ResponseEntity.ok(testUser);
-//    }
 
     @PostMapping(value = "/user")
     public ResponseEntity<User> processRegistrationForm(@RequestBody User user) throws URISyntaxException {
